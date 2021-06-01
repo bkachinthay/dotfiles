@@ -1,6 +1,19 @@
 # Enable colors and change prompt:
 autoload -U colors && colors	# Load colors
-PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b "
+# PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b "
+
+# Prompt Settings {{{
+#
+PROMPT='%F{magenta}%1~%f%F{cyan}$%f '
+## Git Settings
+autoload -Uz vcs_info
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+setopt prompt_subst
+RPROMPT=\$vcs_info_msg_0_
+zstyle ':vcs_info:git:*' formats '%F{yellow}(%b) %r%f'
+zstyle ':vcs_info:*' enable git
+# }}}
 
 setopt autocd		# Automatically cd into typed directory.
 stty stop undef		# Disable ctrl-s to freeze terminal.
@@ -21,8 +34,8 @@ setopt SHARE_HISTORY           # share history across shells
 
 setopt AUTO_CD                 # [default] .. is shortcut for cd .. (etc)
 setopt AUTO_PARAM_SLASH        # tab completing directory appends a slash
-setopt CORRECT                 # [default] command auto-correction
-setopt CORRECT_ALL             # [default] argument auto-correction
+# setopt CORRECT                 # [default] command auto-correction
+# setopt CORRECT_ALL             # [default] argument auto-correction
 
 # Load aliases and shortcuts if existent.
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/shortcutrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shortcutrc"
@@ -37,10 +50,12 @@ alias ...='cd ../..'
 alias ~='cd ~'
 alias ls='ls --color=auto'
 
-alias v='nvim'
 alias e='nvim'
 alias t='tmux -u a || tmux -u'
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+alias serve='browser-sync start --server --files . --no-notify --port 9000'
+alias serve-out='browser-sync start --server --files . --no-notify --host $(hostname -I) --port 9000'
+alias cfg='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 function g() {
   if [[ "$#" > 0 ]]; then
@@ -120,22 +135,20 @@ export NVM_DIR="$HOME/.nvm"
 #   Requires: https://github.com/junegunn/fzf (to use fzf in general)
 #   Requires: https://github.com/BurntSushi/ripgrep (for using rg below)
 export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # history search fzf widget
 # references: https://github.com/gotbletu/dotfiles_v2/blob/master/normal_user/zshrc/.zshrc#L336
 fzf-history-widget() {
   local selected
-  if selected=$( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf -q "$LBUFFER" +s -e -i --tac --height 10% | sed 's/ *[0-9]* *//' ); then
+  if selected=$( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf -q "$LBUFFER" +s -e -i --tac --height 10% | sed 's/ *[0-9*]* *//' ); then
     LBUFFER=$selected
   fi
   zle redisplay
 }
 zle     -N   fzf-history-widget
 bindkey '^R' fzf-history-widget
-
 
 # https://github.com/zsh-users/zsh-autosuggestions.git
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh

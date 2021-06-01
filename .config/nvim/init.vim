@@ -1,28 +1,18 @@
 " vim-plug
 call plug#begin('~/.vim/plugged')
-" Plug 'preservim/nerdtree'
 Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'haya14busa/vim-asterisk'
 Plug 'morhetz/gruvbox'
-" Plug 'gruvbox-community/gruvbox'
   let g:gruvbox_transparent_bg=1
 
 " Plug 'rhysd/clever-f.vim'
 Plug 'RRethy/vim-illuminate'
-" Plug 'w0rp/ale'
 Plug 'dense-analysis/ale'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-" Plug 'mtth/scratch.vim'
 " Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-obsession'
-Plug 'dhruvasagar/vim-prosession'
 Plug 'tpope/vim-fugitive'
-" https://thoughtbot.tumblr.com/post/53022241323/seamlessly-navigate-vim-and-tmux-splits
-Plug 'christoomey/vim-tmux-navigator'
 
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
   let g:undotree_WindowLayout = 2
@@ -53,10 +43,7 @@ let g:pear_tree_smart_backspace   = 1
 let g:pear_tree_smart_closers     = 1
 let g:pear_tree_smart_openers     = 1
 
-" Plug 'https://github.com/alok/notational-fzf-vim'
-
 " syntax js, ts, jsx, tsx
-" Plug 'sheerun/vim-polyglot'
 Plug 'yuezk/vim-js'
 Plug 'HerringtonDarkholme/yats.vim'
 Plug 'maxmellon/vim-jsx-pretty'
@@ -72,6 +59,11 @@ Plug 'ap/vim-css-color'
 Plug 'lambdalisue/fern.vim'
 Plug 'lambdalisue/fern-git-status.vim'
  " Plug 'edkolev/tmuxline.vim'
+
+Plug 'jpalardy/vim-slime'
+" color nested brackets.
+Plug 'amdt/vim-niji'
+
 call plug#end()
 
 " Debugging helpers
@@ -112,6 +104,9 @@ set mouse=n
 set expandtab
 set shiftwidth=2
 
+" don't show statusline
+set laststatus=0
+
 colorscheme gruvbox
 
 " Make Y behave like other capitals D, C
@@ -119,7 +114,7 @@ nnoremap Y y$
 
 " Replace all is aliased to S.
 nnoremap S :%s//g<Left><Left>
-xnoremap S :s//g<Left><Left>
+xnoremap s :s//g<Left><Left>
 
 " split
 set splitbelow splitright
@@ -132,20 +127,9 @@ map <C-l> <C-w>l
 nnoremap <tab>   <c-w>w
 nnoremap <S-tab> <c-w>W
 
-" map <Leader>h <C-w>h
-" map <Leader>j <C-w>j
-" map <Leader>k <C-w>k
-" map <Leader>l <C-w>l
-let g:tmux_navigator_no_mappings = 1
-nnoremap <silent> <Leader>h :TmuxNavigateLeft<cr>
-nnoremap <silent> <Leader>j :TmuxNavigateDown<cr>
-nnoremap <silent> <Leader>k :TmuxNavigateUp<cr>
-nnoremap <silent> <Leader>l :TmuxNavigateRight<cr>
-nnoremap <silent> <Leader>p :TmuxNavigatePrevious<cr>
-
 " fugitive mapping
 nmap     <Leader>g :Gstatus<CR>gg<c-n>
-nnoremap <Leader>d :Gvdiff<CR>
+" nnoremap <Leader>d :Gvdiff<CR>
 nnoremap <nowait> <Leader>dd :Gvdiff<CR>
 
 " diff mapping
@@ -177,26 +161,36 @@ nnoremap <Leader>et :e ~/.tmux.conf<CR>
 nnoremap <Leader>ez :e ~/.zshrc<CR>
 
 " source vim config
-nnoremap <Leader>r :source ~/.config/nvim/init.vim<CR>
+" nnoremap <Leader>r :source ~/.config/nvim/init.vim<CR>
 
 " fix syntax
 nnoremap <Leader>s :syntax sync fromstart<CR>
 
-"Nerd tree
-let g:NERDTreeMinimalUI=1
-
-" nerd tree {{{
-
-" Open current file in nerdtree. close if nerdtree is already open.
-" nnoremap <silent> <expr> <Leader>n g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeFind<CR>" : "\:NERDTree<CR>"
-" map <leader>n :NERDTreeToggle<CR>
-
-" use nerdtree like netw/vinegar
-" nnoremap <silent> _ :silent edit <C-R>=empty(expand('%')) ? '.' : expand('%:p:h')<CR><CR>
-" nmap <buffer> <expr> - g:NERDTreeMapUpdir
+" color nested brackets - amdt/vim-niji {{{
+ let g:niji_dark_colours = [
+     \ [ '81', '#5fd7ff'],
+     \ [ '99', '#875fff'],
+     \ [ '1',  '#dc322f'],
+     \ [ '76', '#5fd700'],
+     \ [ '3',  '#b58900'],
+     \ [ '2',  '#859900'],
+     \ [ '6',  '#2aa198'],
+     \ [ '4',  '#268bd2'],
+     \ ]
+let g:niji_matching_filetypes = ['lisp', 'scheme', 'clojure', 'javascript']
 
 " }}}
-"
+
+" slime {{{
+
+let g:slime_default_config={'socket_name': 'default', 'target_pane': '{down-of}'}
+let g:slime_paste_file=tempname()
+let g:slime_target='tmux'
+xmap <Leader>r <Plug>SlimeRegionSend
+nmap <Leader>r <Plug>SlimeParagraphSend
+nmap <c-c>v     <Plug>SlimeConfig
+
+" }}}
 
 " fern {{{
 
@@ -230,8 +224,8 @@ function! FernInit() abort
   nmap <buffer> o <Plug>(fern-my-open-expand-collapse)
   nmap <buffer> go <Plug>(fern-my-open-expand-collapse)<C-w>p
   " nmap <buffer> l <Plug>(fern-my-open-expand-collapse)
-  nmap <buffer> m <Plug>(fern-action-mark:toggle)j
-  xmap <buffer> m <Plug>(fern-action-mark:toggle)j
+  nmap <buffer> m <Plug>(fern-action-mark:toggle)
+  xmap <buffer> m <Plug>(fern-action-mark:toggle)
   " nmap <buffer> N <Plug>(fern-action-new-file)
   " nmap <buffer> K <Plug>(fern-action-new-dir)
   nmap <buffer> C <Plug>(fern-action-copy)
@@ -239,6 +233,7 @@ function! FernInit() abort
   nmap <buffer> D <Plug>(fern-action-remove)
   nmap <buffer> M <Plug>(fern-action-move)
   nmap <buffer> R <Plug>(fern-action-rename)
+  xmap <buffer> R <Plug>(fern-action-rename)
   nmap <buffer> s <Plug>(fern-action-open:split)
   nmap <buffer> v <Plug>(fern-action-open:vsplit)
   nmap <buffer> r <Plug>(fern-action-reload)
@@ -247,6 +242,7 @@ function! FernInit() abort
   nmap <buffer> <nowait> d <Plug>(fern-action-hidden:toggle)
   nmap <buffer> <nowait> h <Plug>(fern-action-leave)
   nmap <buffer> <nowait> l <Plug>(fern-action-enter)
+  nmap <buffer> <nowait> <Enter> :set laststatus=2<CR><Plug>(fern-action-open:select):set laststatus=0<CR>
   nmap <buffer> <nowait> - <Plug>(fern-action-leave)
 endfunction
 
@@ -303,7 +299,6 @@ map <C-p> "+P
 " xnoremap <Leader>+ g<C-a>
 " xnoremap <Leader>- g<C-x>
 
- " pas for notational fzf
 " \   'typescript': ['eslint', 'tslint', 'tsserver'],
 " \   'typescript.tsx': ['eslint', 'tslint', 'tsserver'],
 " let g:nv_search_paths = ['~/notes']
@@ -324,13 +319,6 @@ let g:ale_fixers = {
 \   'json': ['prettier'],
 \   'css': ['prettier', 'eslint'],
 \}
-" let g:ale_fixers = {
-" \   'javascript': ['prettier'],
-" \   'typescript': ['prettier'],
-" \   'typescript.tsx': ['prettier'],
-" \   'json': ['prettier'],
-" \   'css': ['prettier'],
-" \}
 
 let g:ale_linter_aliases = {'typescriptreact': 'typescript'}
 
@@ -351,61 +339,6 @@ if exists('##TextYankPost')
 endif
 " }}}
 
-"" airline {{{
-let g:Powerline_symbols = "fancy"
-let g:Powerline_dividers_override = ["\Ue0b0","\Ue0b1","\Ue0b2","\Ue0b3"]
-let g:Powerline_symbols_override = {'BRANCH': "\Ue0a0", 'LINE': "\Ue0a1", 'RO': "\Ue0a2"}
-let g:airline_powerline_fonts = 1
-let g:airline_right_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_left_alt_sep= ''
-let g:airline_left_sep = ''
-
-" air-line
-
-let g:airline_powerline_fonts = 1
-
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-
-" unicode symbols
-let g:airline_left_sep = '»'
-let g:airline_left_sep = '▶'
-let g:airline_right_sep = '«'
-let g:airline_right_sep = '◀'
-let g:airline_symbols.linenr = '␊'
-let g:airline_symbols.linenr = '␤'
-let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.branch = '⎇'
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.paste = 'Þ'
-let g:airline_symbols.paste = '∥'
-let g:airline_symbols.whitespace = 'Ξ'
-
-" airline symbols
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
-
-"Airline Themes
-" let g:airline_theme='dark'
-" let g:airline_theme='badwolf'
-" let g:airline_theme='ravenpower' let g:airline_theme='simple'
-" let g:airline_theme='term'
-" let g:airline_theme='ubaryd'
-" let g:airline_theme='laederon'
-" let g:airline_theme='kolor'
-" let g:airline_theme='molokai'
-" let g:airline_theme='powerlineish'
-" let g:airline_theme='gruvbox'
-let g:airline_theme='base16'
-" }}}
-
 " keep .swp and backup file in tmp folder
 set backupdir=/tmp//,.
 set directory=/tmp//,.
@@ -415,22 +348,6 @@ if has('persistent_undo')
   set undodir=/tmp,.
   set undofile
 endif
-
-" scratch params
-" let g:scratch_persistence_file = '~/.config/nvim/scratch.txt'
-
-" -----------------------------------------------------------------------------
-" Color settings
-" -----------------------------------------------------------------------------
-
-" " Enable 24-bit true colors if your terminal supports it.
-" if (has("termguicolors"))
-"   " https://github.com/vim/vim/issues/993#issuecomment-255651605
-"   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-"   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-
-"   set termguicolors
-" endif
 
 " Enable syntax highlighting.
 syntax on
