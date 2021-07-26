@@ -10,9 +10,13 @@ Plug 'morhetz/gruvbox'
 " Plug 'rhysd/clever-f.vim'
 Plug 'RRethy/vim-illuminate'
 Plug 'dense-analysis/ale'
-" Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-obsession'
+Plug 'junegunn/goyo.vim'
+
+" git stuff
 Plug 'tpope/vim-fugitive'
+Plug 'mhinz/vim-signify'
+Plug 'junegunn/gv.vim'
 
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
   let g:undotree_WindowLayout = 2
@@ -62,8 +66,15 @@ Plug 'lambdalisue/fern-git-status.vim'
 
 Plug 'jpalardy/vim-slime'
 " color nested brackets.
-Plug 'amdt/vim-niji'
+" Plug 'amdt/vim-niji'
+Plug 'junegunn/rainbow_parentheses.vim'
 
+" Interactive scratchpad: https://www.chrisatmachine.com/Neovim/18-codi
+" Plug 'metakirby5/codi.vim'
+Plug 'Pablo1107/codi.vim'
+
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/playground'
 call plug#end()
 
 " Debugging helpers
@@ -111,6 +122,13 @@ colorscheme gruvbox
 
 " Make Y behave like other capitals D, C
 nnoremap Y y$
+
+" next and previous tabs
+nnoremap ]t :tabnext<CR>
+nnoremap [t :tabprevious<CR>
+
+" create new empty tab
+nnoremap <Leader>t :tabnew<CR>
 
 " Replace all is aliased to S.
 nnoremap S :%s//g<Left><Left>
@@ -166,21 +184,18 @@ nnoremap <Leader>ez :e ~/.zshrc<CR>
 " fix syntax
 nnoremap <Leader>s :syntax sync fromstart<CR>
 
-" color nested brackets - amdt/vim-niji {{{
- let g:niji_dark_colours = [
-     \ [ '81', '#5fd7ff'],
-     \ [ '99', '#875fff'],
-     \ [ '1',  '#dc322f'],
-     \ [ '76', '#5fd700'],
-     \ [ '3',  '#b58900'],
-     \ [ '2',  '#859900'],
-     \ [ '6',  '#2aa198'],
-     \ [ '4',  '#268bd2'],
-     \ ]
-let g:niji_matching_filetypes = ['lisp', 'scheme', 'clojure', 'javascript']
-
+" vim-signify {{{
+let g:signify_sign_add               = '+'
+let g:signify_sign_delete            = '_'
+let g:signify_sign_delete_first_line = '‾'
+let g:signify_sign_change            = '~'
 " }}}
 
+" rainbow_parenthesis {{{
+let g:rainbow#max_level = 16
+let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+" }}}
+ 
 " slime {{{
 
 let g:slime_default_config={'socket_name': 'default', 'target_pane': '{down-of}'}
@@ -282,11 +297,33 @@ let g:fern_git_status#disable_ignored    = 1
 
 " }}}
 
-" FZF map
+" FZF map {{{
 " nnoremap <silent> <Leader>f :Files -m<CR>
 nnoremap <silent> <Leader>f :Files<CR>
 nnoremap <silent> <Leader>b :Buffers<CR>
+nnoremap <silent> <Leader>? :GitFiles?<CR>
 
+" to remove files from buffer list run :BD, search file and select them with
+" tab and then enter to remove them.
+" https://github.com/junegunn/fzf.vim/pull/733#issuecomment-559720813
+function! s:list_buffers()
+  redir => list
+  silent ls
+  redir END
+  return split(list, "\n")
+endfunction
+
+function! s:delete_buffers(lines)
+  execute 'bwipeout' join(map(a:lines, {_, line -> split(line)[0]}))
+endfunction
+
+command! BD call fzf#run(fzf#wrap({
+  \ 'source': s:list_buffers(),
+  \ 'sink*': { lines -> s:delete_buffers(lines) },
+  \ 'options': '--multi --reverse --bind ctrl-a:select-all+accept'
+\ }))
+" }}}
+ 
 " copy and paste
 vnoremap <C-c> "*y :let @+=@*<CR>
 map <C-p> "+P

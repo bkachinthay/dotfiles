@@ -50,7 +50,8 @@ alias ...='cd ../..'
 alias ~='cd ~'
 alias ls='ls --color=auto'
 
-alias e='nvim'
+# alias e='nvim'
+
 alias t='tmux -u a || tmux -u'
 
 alias serve='browser-sync start --server --files . --no-notify --port 9000'
@@ -64,6 +65,24 @@ function g() {
     git status -sb
   fi
 }
+
+function e() {
+  to_open=${1:-`pwd`}
+  if [[ -d "$to_open" ]]; then
+    # open session if Session.vim exists in given directory.
+    if [[ -f "$to_open/Session.vim" ]]; then
+      nvim -S "$to_open/Session.vim"
+    else
+      # change the vim root directory to given
+      # path (so that fzf, etc works correctly).
+      nvim "$to_open" -c "cd $to_open"
+    fi
+  else
+    nvim $to_open
+  fi
+}
+
+alias se='nvim -c ":argadd $(cfg ls-tree --full-tree --name-only -r HEAD | tr \"\n\" \" \")"'
 
 # git aliases https://catonmat.net/git-aliases
 # alias g='git status -sb'
