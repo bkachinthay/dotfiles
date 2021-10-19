@@ -115,6 +115,11 @@ set mouse=n
 set expandtab
 set shiftwidth=2
 
+" jk | Escaping!
+inoremap jk <Esc>
+cnoremap jk <C-c>
+" xnoremap jk <Esc>
+
 " don't show statusline
 set laststatus=0
 
@@ -198,7 +203,8 @@ let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
  
 " slime {{{
 
-let g:slime_default_config={'socket_name': 'default', 'target_pane': '{down-of}'}
+" https://github.com/jpalardy/vim-slime/wiki/configurations
+let g:slime_default_config={'socket_name': 'default', 'target_pane': '{right-of}'}
 let g:slime_paste_file=tempname()
 let g:slime_target='tmux'
 xmap <Leader>r <Plug>SlimeRegionSend
