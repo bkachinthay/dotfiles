@@ -71,11 +71,12 @@ function e() {
   if [[ -d "$to_open" ]]; then
     # open session if Session.vim exists in given directory.
     if [[ -f "$to_open/Session.vim" ]]; then
-      nvim -S "$to_open/Session.vim"
+      $EDITOR -S "$to_open/Session.vim"
     else
       # change the vim root directory to given
       # path (so that fzf, etc works correctly).
-      nvim "$to_open" -c "cd $to_open"
+      # nvim "$to_open" -c "cd $to_open"
+      cd "$to_open" && $EDITOR .
     fi
   else
     nvim $to_open
