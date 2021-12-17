@@ -41,6 +41,7 @@ setopt AUTO_PARAM_SLASH        # tab completing directory appends a slash
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/shortcutrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shortcutrc"
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/aliasrc"
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/zshnameddirrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/zshnameddirrc"
+
 #
 # Prompt
 #
@@ -49,11 +50,43 @@ setopt AUTO_PARAM_SLASH        # tab completing directory appends a slash
 alias ...='cd ../..'
 alias ~='cd ~'
 alias ls='ls --color=auto'
-
-# alias e='nvim'
-
+alias la='ls --color=auto -a'
+alias lha='ls --color=auto -lha'
+alias lh='ls --color=auto -lh'
+alias ll='ls --color=auto -l'
+alias df='df -h'
+alias z='zathura'
+alias s='sxiv'
+alias n='newsboat'
 alias t='tmux -u a || tmux -u'
 
+# alias o='xdg-open "$(find -type f | fzf)"'
+function o() {
+  if [[ "$#" > 0 ]]; then
+    xdg-open "$@"
+  else
+    xdg-open "$(find -type f | fzf)"
+  fi
+}
+
+alias fd='cd $(find . -maxdepth 3 -type d | fzf)'
+alias fdh='cd $(find ~ -maxdepth 3 -type d | fzf)'
+# alias frm='find . -maxdepth 1 -type f | fzf -m | tr \\n \\0 | xargs -0 rm'
+# alias frm='for file in $(find . -maxdepth 1 -type f | fzf -m); do echo $file; done'
+
+function mcd() {
+  mkdir -p $1 && cd $1
+}
+
+function cht() {
+  curl "cheat.sh/${1}" | less -R
+}
+
+alias p='sudo pacman'
+alias td='transmission-daemon'
+alias ydl='youtube-dl'
+
+alias htmllint="python -c 'import sys; import xml.dom.minidom; s=sys.stdin.read(); print(xml.dom.minidom.parseString(s).toprettyxml())'"
 alias serve='browser-sync start --server --files . --no-notify --port 9000'
 alias serve-out='browser-sync start --server --files . --no-notify --host $(hostname -I) --port 9000'
 alias cfg='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
