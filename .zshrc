@@ -54,6 +54,7 @@ alias la='ls --color=auto -a'
 alias lha='ls --color=auto -lha'
 alias lh='ls --color=auto -lh'
 alias ll='ls --color=auto -l'
+alias rmrf='rm -rf'
 alias df='df -h'
 alias z='zathura'
 alias s='sxiv'
@@ -79,12 +80,17 @@ function mcd() {
 }
 
 function cht() {
-  curl "cheat.sh/${1}" | less -R
+  curl -s "cheat.sh/${1}" | less -R
 }
 
 alias p='sudo pacman'
 alias td='transmission-daemon'
 alias ydl='youtube-dl'
+
+alias sub='qnapi -c -l en'
+
+alias preview='tsp mpv --ontop --no-border --force-window --autofit=500x280 --geometry=-15-60 '
+
 
 alias htmllint="python -c 'import sys; import xml.dom.minidom; s=sys.stdin.read(); print(xml.dom.minidom.parseString(s).toprettyxml())'"
 alias serve='browser-sync start --server --files . --no-notify --port 9000'
