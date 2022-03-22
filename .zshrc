@@ -91,11 +91,12 @@ alias sub='qnapi -c -l en'
 
 alias preview='tsp mpv --ontop --no-border --force-window --autofit=500x280 --geometry=-15-60 '
 
-
+alias myip="ip -4 a | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1'"
 alias htmllint="python -c 'import sys; import xml.dom.minidom; s=sys.stdin.read(); print(xml.dom.minidom.parseString(s).toprettyxml())'"
 alias serve='browser-sync start --server --files . --no-notify --port 9000'
 alias serve-out='browser-sync start --server --files . --no-notify --host $(hostname -I) --port 9000'
 alias cfg='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias cfge='cd && GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME nvim -c "G"'
 
 function g() {
   if [[ "$#" > 0 ]]; then
