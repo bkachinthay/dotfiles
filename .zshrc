@@ -96,6 +96,8 @@ alias htmllint="python -c 'import sys; import xml.dom.minidom; s=sys.stdin.read(
 alias serve='browser-sync start --server --files . --no-notify --port 9000'
 alias serve-out='browser-sync start --server --files . --no-notify --host $(hostname -I) --port 9000'
 alias cfg='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+# make fugitive work with bare repo https://stackoverflow.com/a/66624354
 alias cfge='cd && GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME nvim -c "G"'
 
 function g() {
