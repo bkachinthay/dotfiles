@@ -21,7 +21,7 @@ stty stop undef		# Disable ctrl-s to freeze terminal.
 # History in cache directory:
 HISTSIZE=1000000
 SAVEHIST=1000000
-HISTFILE=~/.cache/zsh/history
+HISTFILE=~/.zsh/history
 
 # Options
 #
